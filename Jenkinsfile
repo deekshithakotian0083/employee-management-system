@@ -1,53 +1,44 @@
-pipeline {
-    agent any
 
-    options {
-        timestamps()
-    }
-
-    stages {
-        stage('Source Code Checkout') {
+        stage('Docker Version Check') {
             steps {
-                // For a Pipeline script loaded from SCM or a Multibranch Pipeline.
-                checkout scm
-                echo 'Source code checkout completed.'
+                bat 'docker --version'
+                bat 'docker info'
+                echo 'Docker is accessible from Jenkins.'
             }
         }
 
-        stage('Build and Validation') {
+        stage('Pull Docker Image') {
             steps {
-                bat 'python --version'
-                bat 'python -m py_compile app.py test_app.py'
-                echo 'Python syntax validation passed.'
+                bat 'docker pull nginx:alpine'
+                echo 'Docker image pulled successfully.'
             }
         }
 
-        stage('Test') {
+        stage('Verify Docker Image') {
             steps {
-                bat 'if not exist reports mkdir reports'
-                // Capture test output while preserving the test command's exit code.
-                bat 'python -m unittest -v test_app > reports\\test-report.txt 2>&1'
+                bat 'docker image inspect nginx:alpine'
+                echo 'Docker image verified successfully.'
             }
         }
 
-        stage('Package Artifact') {
+        stage('Run Docker Container') {
             steps {
-                bat 'powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path app.py,test_app.py,requirements.txt,README.md -DestinationPath employee-management-system.zip -Force"'
-                archiveArtifacts artifacts: 'employee-management-system.zip,reports/test-report.txt',
-                    allowEmptyArchive: false
+                bat '''
+                docker rm -f employee-nginx-%BUILD_NUMBER% 2>nul
+                docker run -d --name employee-nginx-%BUILD_NUMBER% -p 8081:80 nginx:alpine
+                '''
+                echo 'Nginx container started.'
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Employee Management System CI pipeline completed successfully.'
+        stage('Verify Container') {
+            steps {
+                bat '''
+                docker ps --filter "name=employee-nginx-%BUILD_NUMBER%" --filter "status=running" --format "{{.Names}}" > container-status.txt
+
+                for %%A in (container-status.txt) do if %%~zA==0 exit /b 1
+
+                echo Container is running successfully.
+                '''
+            }
         }
-        failure {
-            echo 'Pipeline failed. Review the stage logs and test report.'
-        }
-        always {
-            echo 'Pipeline execution finished.'
-        }
-    }
-}
