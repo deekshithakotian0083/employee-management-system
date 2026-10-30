@@ -30,9 +30,10 @@ pipeline {
 
                 bat '''
                 python -m unittest -v test_app > reports\\test-report.txt 2>&1
+                if errorlevel 1 exit /b 1
                 '''
 
-                echo 'Unit tests completed successfully.'
+                echo 'All unit tests passed successfully.'
             }
         }
 
@@ -51,7 +52,6 @@ pipeline {
 
         stage('Docker Version Check') {
             steps {
-                bat 'where docker'
                 bat 'docker --version'
                 bat 'docker info'
 
