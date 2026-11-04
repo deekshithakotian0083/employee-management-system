@@ -82,7 +82,7 @@ pipeline {
                 docker run -d --name employee-nginx-%BUILD_NUMBER% -p 8082:80 nginx:alpine
                 '''
 
-                echo 'Nginx container started on port 8082.'
+                echo 'Nginx container started on port 8083.'
             }
         }
 
