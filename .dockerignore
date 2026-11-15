@@ -1,0 +1,7 @@
+.git
+__pycache__
+reports
+*.zip
+*.txt
+!requirements.txt
+Jenkinsfile
