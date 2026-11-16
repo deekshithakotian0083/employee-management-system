@@ -1,2 +1,3 @@
-# This project uses only Python's standard library.
-# No third-party packages are required.
+# Only the Flask web app (flask_app.py) needs a third-party package.
+# The core app and unit tests use Python's standard library only.
+flask==3.0.3
