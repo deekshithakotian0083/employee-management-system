@@ -1,0 +1,26 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build and CI output
+*.zip
+reports/*
+!reports/.gitkeep
+container-status.txt
+flask-container-status.txt
+
+# Secrets and local configuration
+.env
+*.pem
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
