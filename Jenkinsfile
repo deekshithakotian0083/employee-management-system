@@ -87,8 +87,8 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 bat '''
-                    docker rm -f employee-nginx-%BUILD_NUMBER% 2>nul
-                    docker run -d --name employee-nginx-%BUILD_NUMBER% -p 8083:80 nginx:alpine
+                    docker rm -f employee-nginx 2>nul
+                    docker run -d --name employee-nginx -p 8083:80 nginx:alpine
                 '''
 
                 echo 'Nginx container started on port 8083.'
@@ -99,7 +99,7 @@ pipeline {
         stage('Verify Container') {
             steps {
                 bat '''
-                    docker ps --filter "name=employee-nginx-%BUILD_NUMBER%" --filter "status=running" --format "{{.Names}}" > container-status.txt
+                    docker ps --filter "name=employee-nginx" --filter "status=running" --format "{{.Names}}" > container-status.txt
 
                     for %%A in (container-status.txt) do if %%~zA==0 exit /b 1
 
